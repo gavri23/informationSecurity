@@ -1,6 +1,7 @@
 import cbc
 import itertools
 import enchant
+import argparse
 import re
 
 english_dictionary = enchant.Dict("en_US")
@@ -48,9 +49,13 @@ def get_key(encrypt_msg, iv):
 
 
 if __name__ == '__main__':
-    with open("IvVectors/randomIvVector.txt") as ivVector:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--encrypt_text', type=str, required=True)
+    parser.add_argument('--iv_vector', type=str, required=True)
+    args = parser.parse_args()
+    with open(args.iv_vector) as ivVector:
         iv = ivVector.read()
 
-    with open("encrypt/encryptTextPartB.txt") as encrypt:
+    with open(args.encrypt_text) as encrypt:
         encrypt_msg = encrypt.read()
         final_key = get_key(encrypt_msg, iv)

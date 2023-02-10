@@ -3,6 +3,7 @@ import string
 import cbc
 import utility
 import CipherTextAttack
+import argparse
 
 list_of_all_the_letters = list(string.ascii_letters)
 
@@ -50,8 +51,9 @@ def get_part_key(xored_text, part_encrypt_text):
     key = {}
     print(len(xored_text))
     print(len(part_encrypt_text))
-    for char_in_xored, char_in_encrypt in zip(xored_text, part_encrypt_text):
-        if char_in_xored != char_in_encrypt:
+    str_xored_text = cbc.join_list_to_string(xored_text)
+    for char_in_xored, char_in_encrypt in zip(str_xored_text, part_encrypt_text):
+        if char_in_xored.isalpha() and char_in_encrypt.isalpha():
             key.update({char_in_xored: char_in_encrypt})
     return key
 
@@ -80,8 +82,7 @@ def cipher_text_attack(whole_encrypt_text, all_possible_rest_of_key, part_key, i
 
 
 def plain_text_attack(whole_encrypt_text, part_encrypt_text, part_decrypt_text_iv, iv_vec):
-    part_iv = iv_vec[35:108]
-    xored_text = cbc.xorTxt(part_decrypt_text_iv, part_iv)
+    xored_text = cbc.xorTxt(whole_encrypt_text, iv_vec)
     part_key = get_part_key(xored_text, part_encrypt_text)
     letters_not_in_keys = []
     letters_not_in_values = []
@@ -100,17 +101,23 @@ def plain_text_attack(whole_encrypt_text, part_encrypt_text, part_decrypt_text_i
 
 
 if __name__ == "__main__":
-    with open("encrypt/wholeEncryptionForPartC.txt") as whole_encrypt:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--whole_encrypt', type=str, required=True)
+    parser.add_argument('--part_encrypt', type=str, required=True)
+    parser.add_argument('--part_decrypt', type=str, required=True)
+    parser.add_argument('--iv_vector', type=str, required=True)
+    args = parser.parse_args()
+
+    with open(args.whole_encrypt) as whole_encrypt:
         whole_encrypt_text = whole_encrypt.read()
 
-    with open("encrypt/partEncryptForPartC.txt") as part_encrypt:
+    with open(args.part_encrypt) as part_encrypt:
         part_encrypt_text = part_encrypt.read()
 
-    with open("plainTexts/partTextForPartC.txt") as part_text:
+    with open(args.part_decrypt) as part_text:
         part_decrypt_text = part_text.read()
 
-    with open("IvVectors/randomIvVector.txt") as iv:
+    with open(args.iv_vector) as iv:
         iv_vector = iv.read()
 
     key = plain_text_attack(whole_encrypt_text, part_encrypt_text, part_decrypt_text, iv_vector)
-    a = 5

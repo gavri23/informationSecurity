@@ -1,3 +1,6 @@
+import argparse
+
+
 def join_list_to_string(list_chars):
     return ''.join(str(c) for c in list_chars).replace(" ", "")
 
@@ -24,7 +27,6 @@ def buildKeyMap(keys, values):
 
 def encryption(pTxt, key, iV):
     res = xorTxt(pTxt, iV)
-    # keyMap = buildkeyMap(key)
     encryptListChars = []
     for char in res:
         if char in key.keys():
@@ -42,7 +44,6 @@ def get_keys_from_value(d, val):
 
 
 def decryption(encryption_res, key, iV):
-    # keyMap = buildkeyMap(key)
     decrypt_with_key = []
     for char in encryption_res:
         if char in key.values():
@@ -72,12 +73,17 @@ def buildKey(file_name):
 
 if __name__ == '__main__':
     # give 3 parameters - plain_text, key, iv
-    with open("plainTexts/plainText.txt") as plainTxt:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--plain_text', type=str, required=True)
+    parser.add_argument('--iv_vector', type=str, required=True)
+    parser.add_argument('--key', type=str, required=True)
+    args = parser.parse_args()
+    with open(args.plain_text) as plainTxt:
         pTxt = plainTxt.read()
 
-    key = buildKey("keys/key.txt")
+    key = buildKey(args.key)
 
-    with open("IvVectors/iV.txt") as iv:
+    with open(args.iv_vector) as iv:
         iV = iv.read()
 
     print(f"Plain text before encryption : {pTxt}")
