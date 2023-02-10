@@ -1,1 +1,8 @@
-bacdeghf
+a b
+b a
+c c
+d d
+e e
+f g
+g h
+h f
